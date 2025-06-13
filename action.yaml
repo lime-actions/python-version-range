@@ -35,6 +35,7 @@ runs:
       >> "$GITHUB_OUTPUT"
   - name: Max limit
     id: max-limit
+    shell: bash
     run: |
       if [ -d tox.ini ]; then
         VERSION=$(awk '
@@ -74,6 +75,7 @@ runs:
     if: steps.gh-max.outputs.latest-python-versions
         && steps.gh-max.outputs.latest-python-versions
         != steps.min.outputs.version
+    shell: bash
     run: |
       echo "version=${{ steps.gh-max.outputs.latest-python-versions }}" \
       >> "$GITHUB_OUTPUT"
