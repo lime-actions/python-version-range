@@ -64,7 +64,7 @@ runs:
                 print a[i]
             }
           }
-        ' tox.ini | sort -V | tail -n1)
+        ' "${{ inputs.path-tox }}" | sort -V | tail -n1)
       else
         VERSION=""
       fi
