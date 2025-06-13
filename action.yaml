@@ -35,12 +35,12 @@ runs:
     id: min
     shell: bash
     run: |
-      echo "version=$(grep -Po 'requires-python\s*=\s*"[^\"]+"'
-                        "${{ inputs.path-pyproject }}" \
-                      | grep -Po '>=\s*\K[0-9]+(\.[0-9]+)*' \
-                      | sort -V \
-                      | head -n1)" \
-      >> "$GITHUB_OUTPUT"
+      VERSION=$(grep -Po 'requires-python\s*=\s*"[^\"]+"' \
+                 "${{ inputs.path-pyproject }}" \
+                | grep -Po '>=\s*\K[0-9]+(\.[0-9]+)*' \
+                | sort -V \
+                | head -n1)"
+      echo "version=$VERSION" >> "$GITHUB_OUTPUT"
   - name: Max limit
     id: max-limit
     shell: bash
