@@ -70,7 +70,6 @@ jobs:
         exit 103
     - name: Get versions without tox.ini
       id: test_multiline
-      working-directory: './tests/multi-line envlist'
       uses: ./
       with:
         path-pyproject: './tests/pyproject.toml'
