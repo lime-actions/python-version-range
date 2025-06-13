@@ -1,3 +1,3 @@
-# Generic Template
+# Python version range
 
-Generic template for creating a repository
+Extract range of python version usable in GitHub actions
