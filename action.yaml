@@ -16,7 +16,7 @@ inputs:
 outputs:
   min:
     description: Minimum python version
-    value: ${{ steps.min.ouputs.version }}
+    value: ${{ steps.min.outputs.version }}
   max:
     description: Maximum python version
     value: ${{ steps.max.outputs.version }}
@@ -35,11 +35,11 @@ runs:
     id: min
     shell: bash
     run: |
-      VERSION="$(grep -Po 'requires-python\s*=\s*"[^\"]+"' \
-                 "${{ inputs.path-pyproject }}" \
-                | grep -Po '>=\s*\K[0-9]+(\.[0-9]+)*' \
+      VERSION=$(grep -Po 'requires-python\s*=\s*"[^"]+"'
+                  "${{ inputs.path-pyproject }}" \
+                | grep -Po '[0-9]+(\.[0-9]+)*' \
                 | sort -V \
-                | head -n1)"
+                | head -n1)
       echo "version=$VERSION" >> "$GITHUB_OUTPUT"
   - name: Max limit
     id: max-limit
@@ -87,3 +87,8 @@ runs:
     run: |
       echo "version=${{ steps.gh-max.outputs.latest-python-versions }}" \
       >> "$GITHUB_OUTPUT"
+  - name: Debug outputs
+    run: |
+      echo "min=${{ steps.min.outputs.version }}"
+      echo "max-limit=${{ steps.max-limit.outputs.version }}"
+      echo "gh-max=${{ steps.gh-max.outputs.latest-python-versions }}"
