@@ -88,6 +88,7 @@ runs:
       echo "version=${{ steps.gh-max.outputs.latest-python-versions }}" \
       >> "$GITHUB_OUTPUT"
   - name: Debug outputs
+    shell: bash
     run: |
       echo "min=${{ steps.min.outputs.version }}"
       echo "max-limit=${{ steps.max-limit.outputs.version }}"
