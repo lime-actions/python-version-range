@@ -45,7 +45,7 @@ runs:
     id: max-limit
     shell: bash
     run: |
-      if [ -d "${{ inputs.path-tox }}" ]; then
+      if [ -f "${{ inputs.path-tox }}" ]; then
         VERSION=$(awk '
           BEGIN { in_envlist=0 }
           /^\[.*\]/ { in_envlist=0 }  # reset on section change
