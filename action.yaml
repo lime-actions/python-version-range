@@ -5,7 +5,14 @@ inputs:
   include-prereleases:
     description: Whether to include prereleases
     required: false
-
+  path-pyproject:
+    description: Relative POSIX path to the pyproject.toml file
+    required: false
+    default: 'pyproject.toml'
+  path-tox:
+    description: Relative POSIX path to the tox.ini file
+    required: false
+    default: 'tox.ini'
 outputs:
   min:
     description: Minimum python version
@@ -28,7 +35,8 @@ runs:
     id: min
     shell: bash
     run: |
-      echo "version=$(grep -Po 'requires-python\s*=\s*"[^\"]+"' pyproject.toml \
+      echo "version=$(grep -Po 'requires-python\s*=\s*"[^\"]+"'
+                        "${{ inputs.path-pyproject }}" \
                       | grep -Po '>=\s*\K[0-9]+(\.[0-9]+)*' \
                       | sort -V \
                       | head -n1)" \
@@ -37,7 +45,7 @@ runs:
     id: max-limit
     shell: bash
     run: |
-      if [ -d tox.ini ]; then
+      if [ -d "${{ inputs.path-tox }}" ]; then
         VERSION=$(awk '
           BEGIN { in_envlist=0 }
           /^\[.*\]/ { in_envlist=0 }  # reset on section change

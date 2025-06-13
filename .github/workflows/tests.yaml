@@ -22,8 +22,10 @@ jobs:
         sparse-checkout-cone-mode: false
     - name: Get versions base
       id: test_base
-      working-directory: ./tests/base
       uses: ./
+      with:
+        path-pyproject: ./tests/pyproject.toml
+        path-tox: ./tests/base/tox.ini
     - name: Check
       if: ${{ !startsWith(steps.test_base.outputs.min, '3.10')
               || !startsWith(steps.test_base.outputs.max, '3.13')
@@ -36,10 +38,11 @@ jobs:
         exit 101
     - name: Get versions base
       id: test_prereleases
-      working-directory: ./tests/base
       uses: ./
       with:
         include-prereleases: true
+        path-pyproject: ./tests/pyproject.toml
+        path-tox: ./tests/base/tox.ini
     - name: Check
       if: ${{ !startsWith(steps.test_prereleases.outputs.min, '3.10')
               || !startsWith(steps.test_prereleases.outputs.max, '3.14')
@@ -52,8 +55,10 @@ jobs:
         exit 102
     - name: Get versions without tox.ini
       id: test_no-tox
-      working-directory: './tests/no tox'
       uses: ./
+      with:
+        path-pyproject: './tests/pyproject.toml'
+        path-tox: './tests/.tox.ini'
     - name: Check
       if: ${{ !startsWith(steps.test_no-tox.outputs.min, '3.10')
               || steps.test_no-tox.outputs.max != ''
@@ -67,6 +72,9 @@ jobs:
       id: test_multiline
       working-directory: './tests/multi-line envlist'
       uses: ./
+      with:
+        path-pyproject: './tests/pyproject.toml'
+        path-tox: './tests/multi-line envlist/tox.ini'
     - name: Check
       if: ${{ !startsWith(steps.test_multiline.outputs.min, '3.10')
               || !startsWith(steps.test_multiline.outputs.max, '3.13')
