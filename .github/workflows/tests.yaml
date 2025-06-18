@@ -37,10 +37,10 @@ jobs:
                         steps.test_base.outputs.min)
               || !startsWith(steps.test_base.outputs.versions,
                              format('["{0}", "3.1',
-                             steps.test_base.outputs.max)
+                             steps.test_base.outputs.max))
               || !endsWith(steps.test_base.outputs.versions,
                              format('", "{0}"],',
-                             steps.test_base.outputs.min)
+                             steps.test_base.outputs.min))
               }}
       run: |
         echo '${{ steps.test_base.outputs.min }}'
@@ -102,10 +102,10 @@ jobs:
                         steps.test_base.outputs.min)
               || !startsWith(steps.test_base.outputs.versions,
                              format('["{0}", "3.1',
-                             steps.test_base.outputs.max)
+                             steps.test_base.outputs.max))
               || !endsWith(steps.test_base.outputs.versions,
                              format('", "{0}"],',
-                             steps.test_base.outputs.min)
+                             steps.test_base.outputs.min))
               }}
       run: |
         echo '${{ steps.test_multiline.outputs.min }}'
