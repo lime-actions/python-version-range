@@ -16,18 +16,16 @@ inputs:
 outputs:
   min:
     description: Minimum python version
-    value: ${{ steps.min.outputs.version }}
+    value: ${{ steps.versions.outputs.min }}
   max:
     description: Maximum python version
-    value: ${{ steps.max.outputs.version }}
+    value: ${{ steps.versions.outputs.max }}
+  limits:
+    description: JSON formatted list with only the ends of the range
+    value: ${{ steps.versions.outputs.limits }}
   versions:
-    description: JSON formatted list with both or only the min
-    value: ${{ format('["{0}"{1}]',
-                      steps.min.outputs.version,
-                      steps.max.outputs.version
-                      && format(',"{0}"', steps.max.outputs.version)
-                      || '')}}
-
+    description: JSON formatted list with all versions
+    value: ${{ step.versions.outputs.versions }}
 runs:
   using: 'composite'
   steps:
@@ -66,30 +64,28 @@ runs:
           }
         ' "${{ inputs.path-tox }}" | sort -V | tail -n1)
       else
-        VERSION=""
+        VERSION="${{ steps.min.outputs.version }}"
       fi
 
       echo "version=$VERSION" >> "$GITHUB_OUTPUT"
   - name: Max version
-    id: gh-max
-    if: steps.max-limit.outputs.version
+    id: gh-versions
     uses: snok/latest-python-versions@v1
     with:
       min-version: ${{ steps.min.outputs.version }}
       max-version: ${{ steps.max-limit.outputs.version }}
-      include-prereleases: ${{ inputs.include-prereleases == 'true' }}
-  - name: Max version
-    id: max
-    if: steps.gh-max.outputs.latest-python-versions
-        && steps.gh-max.outputs.latest-python-versions
-        != steps.min.outputs.version
+      include-prereleases: inputs.include-prereleases
+  - name: Parse versions
+    id: versions
     shell: bash
     run: |
-      echo "version=${{ steps.gh-max.outputs.latest-python-versions }}" \
-      >> "$GITHUB_OUTPUT"
-  - name: Debug outputs
-    shell: bash
-    run: |
-      echo "min=${{ steps.min.outputs.version }}"
-      echo "max-limit=${{ steps.max-limit.outputs.version }}"
-      echo "gh-max=${{ steps.gh-max.outputs.latest-python-versions }}"
+      MIN=$(jq ".[-1]" <<< $LATEST_PYTHON_VERSIONS)
+      MAX=$(jq ".[0]" <<< $LATEST_PYTHON_VERSIONS)
+      echo "min=$MIN" >> "$GITHUB_OUTPUT"
+      echo "max=$MAX" >> "$GITHUB_OUTPUT"
+      if [ $MAX == $MIN ]; then
+        echo "limits=["$MAX"]"
+      else
+        echo "limits=["$MAX", "$MIN"]"
+      fi
+      echo "versions=$LATEST_PYTHON_VERSIONS" >> "$GITHUB_OUTPUT"
