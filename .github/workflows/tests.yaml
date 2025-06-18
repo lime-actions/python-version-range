@@ -31,7 +31,7 @@ jobs:
     - name: Check
       if: ${{ !startsWith(steps.test_base.outputs.min, '3.10')
               || !startsWith(steps.test_base.outputs.max, '3.13')
-              || steps.test_base.outputs.limits,
+              || steps.test_base.outputs.limits
               != format('["{0}", "{1}"]',
                         steps.test_base.outputs.max,
                         steps.test_base.outputs.min)
@@ -96,7 +96,7 @@ jobs:
     - name: Check
       if: ${{ !startsWith(steps.test_base.outputs.min, '3.10')
               || !startsWith(steps.test_base.outputs.max, '3.13')
-              || steps.test_base.outputs.limits,
+              || steps.test_base.outputs.limits
               != format('["{0}", "{1}"]',
                         steps.test_base.outputs.max,
                         steps.test_base.outputs.min)
