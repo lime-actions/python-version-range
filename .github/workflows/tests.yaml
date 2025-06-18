@@ -80,7 +80,7 @@ jobs:
               || steps.test_no-tox.outputs.limits
               != format('["{0}"]', steps.test_no-tox.outputs.min) }}
               || steps.test_no-tox.outputs.versions
-              != steps.test_no-tox.outputs.limits
+              != steps.test_no-tox.outputs.limits }}
       run: |
         echo '${{ steps.test_no-tox.outputs.min }}'
         echo '${{ steps.test_no-tox.outputs.max }}'
