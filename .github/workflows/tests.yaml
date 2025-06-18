@@ -29,8 +29,8 @@ jobs:
         path-pyproject: ./tests/pyproject.toml
         path-tox: ./tests/base/tox.ini
     - name: Check
-      if: ${{ !startsWith(steps.test_base.outputs.min, '3.10')
-              || !startsWith(steps.test_base.outputs.max, '3.13')
+      if: ${{ !startsWith(steps.test_base.outputs.min, '3.10.')
+              || !startsWith(steps.test_base.outputs.max, '3.13.')
               || steps.test_base.outputs.limits
               != format('["{0}", "{1}"]',
                         steps.test_base.outputs.max,
@@ -39,7 +39,7 @@ jobs:
                              format('["{0}", "3.1',
                              steps.test_base.outputs.max))
               || !endsWith(steps.test_base.outputs.versions,
-                             format('", "{0}"],',
+                             format('", "{0}"]',
                              steps.test_base.outputs.min))
               }}
       run: |
@@ -56,11 +56,8 @@ jobs:
         path-pyproject: ./tests/pyproject.toml
         path-tox: ./tests/base/tox.ini
     - name: Check
-      if: ${{ !startsWith(steps.test_prereleases.outputs.min, '3.10')
-              || !startsWith(steps.test_prereleases.outputs.max, '3.14')
-              || !startsWith(steps.test_prereleases.outputs.limits, '["3.14')
-              || !startsWith(steps.test_prereleases.outputs.versions,
-                             '["3.14') }}
+      if: ${{ !startsWith(steps.test_prereleases.outputs.min, '3.10.')
+              || !startsWith(steps.test_prereleases.outputs.max, '3.14.') }}
       run: |
         echo '${{ steps.test_prereleases.outputs.min }}'
         echo '${{ steps.test_prereleases.outputs.max }}'
@@ -74,11 +71,11 @@ jobs:
         path-pyproject: './tests/pyproject.toml'
         path-tox: './tests/.tox.ini'
     - name: Check
-      if: ${{ !startsWith(steps.test_no-tox.outputs.min, '3.10')
+      if: ${{ !startsWith(steps.test_no-tox.outputs.min, '3.10.')
               || steps.test_no-tox.outputs.max
               != steps.test_no-tox.outputs.min
               || steps.test_no-tox.outputs.limits
-              != format('["{0}"]', steps.test_no-tox.outputs.min) }}
+              != format('["{0}"]', steps.test_no-tox.outputs.min)
               || steps.test_no-tox.outputs.versions
               != steps.test_no-tox.outputs.limits }}
       run: |
@@ -94,8 +91,8 @@ jobs:
         path-pyproject: './tests/pyproject.toml'
         path-tox: './tests/multi-line envlist/tox.ini'
     - name: Check
-      if: ${{ !startsWith(steps.test_base.outputs.min, '3.10')
-              || !startsWith(steps.test_base.outputs.max, '3.13')
+      if: ${{ !startsWith(steps.test_base.outputs.min, '3.10.')
+              || !startsWith(steps.test_base.outputs.max, '3.13.')
               || steps.test_base.outputs.limits
               != format('["{0}", "{1}"]',
                         steps.test_base.outputs.max,
@@ -104,7 +101,7 @@ jobs:
                              format('["{0}", "3.1',
                              steps.test_base.outputs.max))
               || !endsWith(steps.test_base.outputs.versions,
-                             format('", "{0}"],',
+                             format('", "{0}"]',
                              steps.test_base.outputs.min))
               }}
       run: |
