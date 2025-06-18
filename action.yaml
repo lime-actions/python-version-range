@@ -80,8 +80,8 @@ runs:
     id: versions
     shell: bash
     run: |
-      MIN=$(jq ".[-1]" <<< $LATEST_PYTHON_VERSIONS)
-      MAX=$(jq ".[0]" <<< $LATEST_PYTHON_VERSIONS)
+      MIN=$(jq ".[-1] --raw-output" <<< $LATEST_PYTHON_VERSIONS)
+      MAX=$(jq ".[0] --raw-output" <<< $LATEST_PYTHON_VERSIONS)
       echo "min=$MIN" >> "$GITHUB_OUTPUT"
       echo "max=$MAX" >> "$GITHUB_OUTPUT"
       if [ $MAX == $MIN ]; then
