@@ -25,7 +25,7 @@ outputs:
     value: ${{ steps.versions.outputs.limits }}
   versions:
     description: JSON formatted list with all versions
-    value: ${{ step.versions.outputs.versions }}
+    value: ${{ steps.versions.outputs.versions }}
 runs:
   using: 'composite'
   steps:
