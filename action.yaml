@@ -87,7 +87,7 @@ runs:
       echo "max=$MAX" >> "$GITHUB_OUTPUT"
 
       if [ $MAX == $MIN ]; then
-        echo "limits=["$MAX"]" >> "$GITHUB_OUTPUT"
+        echo "limits=[\"$MAX\"]" >> "$GITHUB_OUTPUT"
       else
         echo "limits=[\"$MAX\", \"$MIN\"]" >> "$GITHUB_OUTPUT"
       fi
