@@ -1,0 +1,112 @@
+name: Tests
+run-name: Testing the action
+on:
+  push:
+    paths:
+    - 'action.yaml'
+    - '.github/workflows/tests.yaml'
+    - 'tests/*'
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        fetch-tags: true
+        sparse-checkout: |
+          action.yaml
+          tests/
+        sparse-checkout-cone-mode: false
+    - name: Get versions base
+      id: test_base
+      uses: ./
+      with:
+        path-pyproject: ./tests/pyproject.toml
+        path-tox: ./tests/base/tox.ini
+    - name: Check
+      if: ${{ !startsWith(steps.test_base.outputs.min, '3.10.')
+              || !startsWith(steps.test_base.outputs.max, '3.13.')
+              || steps.test_base.outputs.limits
+              != format('["{0}", "{1}"]',
+                        steps.test_base.outputs.max,
+                        steps.test_base.outputs.min)
+              || !startsWith(steps.test_base.outputs.versions,
+                             format('["{0}", "3.1',
+                             steps.test_base.outputs.max))
+              || !endsWith(steps.test_base.outputs.versions,
+                             format('", "{0}"]',
+                             steps.test_base.outputs.min))
+              }}
+      run: |
+        echo '${{ steps.test_base.outputs.min }}'
+        echo '${{ steps.test_base.outputs.max }}'
+        echo '${{ steps.test_base.outputs.limits }}'
+        echo '${{ steps.test_base.outputs.versions }}'
+        exit 101
+    - name: Get versions base
+      id: test_prereleases
+      uses: ./
+      with:
+        include-prereleases: true
+        path-pyproject: ./tests/pyproject.toml
+        path-tox: ./tests/base/tox.ini
+    - name: Check
+      if: ${{ !startsWith(steps.test_prereleases.outputs.min, '3.10.')
+              || !startsWith(steps.test_prereleases.outputs.max, '3.14.') }}
+      run: |
+        echo '${{ steps.test_prereleases.outputs.min }}'
+        echo '${{ steps.test_prereleases.outputs.max }}'
+        echo '${{ steps.test_prereleases.outputs.limits }}'
+        echo '${{ steps.test_prereleases.outputs.versions }}'
+        exit 102
+    - name: Get versions without tox.ini
+      id: test_no-tox
+      uses: ./
+      with:
+        path-pyproject: './tests/pyproject.toml'
+        path-tox: './tests/.tox.ini'
+    - name: Check
+      if: ${{ !startsWith(steps.test_no-tox.outputs.min, '3.10.')
+              || steps.test_no-tox.outputs.max
+              != steps.test_no-tox.outputs.min
+              || steps.test_no-tox.outputs.limits
+              != format('["{0}"]', steps.test_no-tox.outputs.min)
+              || steps.test_no-tox.outputs.versions
+              != steps.test_no-tox.outputs.limits }}
+      run: |
+        echo '${{ steps.test_no-tox.outputs.min }}'
+        echo '${{ steps.test_no-tox.outputs.max }}'
+        echo '${{ steps.test_no-tox.outputs.limits }}'
+        echo '${{ steps.test_no-tox.outputs.versions }}'
+        exit 103
+    - name: Get versions without tox.ini
+      id: test_multiline
+      uses: ./
+      with:
+        path-pyproject: './tests/pyproject.toml'
+        path-tox: './tests/multi-line envlist/tox.ini'
+    - name: Check
+      if: ${{ !startsWith(steps.test_base.outputs.min, '3.10.')
+              || !startsWith(steps.test_base.outputs.max, '3.13.')
+              || steps.test_base.outputs.limits
+              != format('["{0}", "{1}"]',
+                        steps.test_base.outputs.max,
+                        steps.test_base.outputs.min)
+              || !startsWith(steps.test_base.outputs.versions,
+                             format('["{0}", "3.1',
+                             steps.test_base.outputs.max))
+              || !endsWith(steps.test_base.outputs.versions,
+                             format('", "{0}"]',
+                             steps.test_base.outputs.min))
+              }}
+      run: |
+        echo '${{ steps.test_multiline.outputs.min }}'
+        echo '${{ steps.test_multiline.outputs.max }}'
+        echo '${{ steps.test_multiline.outputs.limits }}'
+        echo '${{ steps.test_multiline.outputs.versions }}'
+        exit 104
