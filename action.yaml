@@ -74,7 +74,7 @@ runs:
     with:
       min-version: ${{ steps.min.outputs.version }}
       max-version: ${{ steps.max-limit.outputs.version }}
-      include-prereleases: inputs.include-prereleases
+      include-prereleases: ${{ inputs.include-prereleases }}
   - name: Parse versions
     id: versions
     shell: bash
