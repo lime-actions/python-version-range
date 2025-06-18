@@ -1,0 +1,95 @@
+name: Build
+description: Find the minimum python version
+
+inputs:
+  include-prereleases:
+    description: Whether to include prereleases
+    required: false
+    default: false
+  path-pyproject:
+    description: Relative POSIX path to the pyproject.toml file
+    required: false
+    default: 'pyproject.toml'
+  path-tox:
+    description: Relative POSIX path to the tox.ini file
+    required: false
+    default: 'tox.ini'
+outputs:
+  min:
+    description: Minimum python version
+    value: ${{ steps.versions.outputs.min }}
+  max:
+    description: Maximum python version
+    value: ${{ steps.versions.outputs.max }}
+  limits:
+    description: JSON formatted list with only the ends of the range
+    value: ${{ steps.versions.outputs.limits }}
+  versions:
+    description: JSON formatted list with all versions
+    value: ${{ steps.versions.outputs.versions }}
+runs:
+  using: 'composite'
+  steps:
+  - name: Python version
+    id: min
+    shell: bash
+    run: |
+      VERSION=$(grep -Po 'requires-python\s*=\s*"[^"]+"' \
+                  "${{ inputs.path-pyproject }}" \
+                | grep -Po '[0-9]+(\.[0-9]+)*' \
+                | sort -V \
+                | head -n1)
+      echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+  - name: Max limit
+    id: max-limit
+    shell: bash
+    run: |
+      if [ -f "${{ inputs.path-tox }}" ]; then
+        VERSION=$(awk '
+          BEGIN { in_envlist=0 }
+          /^\[.*\]/ { in_envlist=0 }  # reset on section change
+          /^[[:space:]]*envlist[[:space:]]*=/ {
+            in_envlist=1
+            line = gensub(/^[[:space:]]*envlist[[:space:]]*=[[:space:]]*/, "", 1)
+          }
+          in_envlist && /^[[:space:]]+[^\[]/ {
+            line = line "," $0
+          }
+          END {
+            gsub(/[[:space:]]+/, "", line)
+            split(line, a, ",")
+            for (i in a) {
+              if (a[i] ~ /^[0-9]+(\.[0-9]+)*$/)
+                print a[i]
+            }
+          }
+        ' "${{ inputs.path-tox }}" | sort -V | tail -n1)
+      else
+        VERSION="${{ steps.min.outputs.version }}"
+      fi
+
+      echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+  - name: Max version
+    id: gh-versions
+    uses: snok/latest-python-versions@v1
+    with:
+      min-version: ${{ steps.min.outputs.version }}
+      max-version: ${{ steps.max-limit.outputs.version }}
+      include-prereleases: ${{ inputs.include-prereleases }}
+  - name: Parse versions
+    id: versions
+    shell: bash
+    run: |
+      MIN=$(jq ".[-1]" --raw-output <<< $LATEST_PYTHON_VERSIONS)
+      MAX=$(jq ".[0]" --raw-output <<< $LATEST_PYTHON_VERSIONS)
+
+      echo "min=$MIN" >> "$GITHUB_OUTPUT"
+      echo "max=$MAX" >> "$GITHUB_OUTPUT"
+
+      if [ $MAX == $MIN ]; then
+        echo "limits=[\"$MAX\"]" >> "$GITHUB_OUTPUT"
+      else
+        echo "limits=[\"$MAX\", \"$MIN\"]" >> "$GITHUB_OUTPUT"
+      fi
+
+      echo "versions=$LATEST_PYTHON_VERSIONS" >> "$GITHUB_OUTPUT"
