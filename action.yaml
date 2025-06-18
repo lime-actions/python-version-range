@@ -5,6 +5,7 @@ inputs:
   include-prereleases:
     description: Whether to include prereleases
     required: false
+    default: false
   path-pyproject:
     description: Relative POSIX path to the pyproject.toml file
     required: false
