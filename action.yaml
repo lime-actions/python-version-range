@@ -89,7 +89,7 @@ runs:
       if [ $MAX == $MIN ]; then
         echo "limits=["$MAX"]" >> "$GITHUB_OUTPUT"
       else
-        echo "limits=["$MAX", "$MIN"]" >> "$GITHUB_OUTPUT"
+        echo "limits=['"'$MAX'"', '"'$MIN'"']" >> "$GITHUB_OUTPUT"
       fi
 
       echo "versions=$LATEST_PYTHON_VERSIONS" >> "$GITHUB_OUTPUT"
